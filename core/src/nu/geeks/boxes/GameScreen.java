@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
@@ -31,11 +32,11 @@ public class GameScreen {
     Color currentColor;
     Color[] colors = {UTILS.blue,UTILS.green,UTILS.pink,UTILS.red};
     Random rand;
+    BitmapFont fnt;
 
     boolean firstGame = true;
     SpriteBatch batch;
     Environment environment;
-    Texture bg2, bg3;
     PerspectiveCamera cam;
     ModelBatch mBatch;
     Box boxes[][];
@@ -45,6 +46,7 @@ public class GameScreen {
     public GameScreen(TheBoxes game){
         this.game = game;
         rand = new Random();
+        fnt = new BitmapFont();
         cam = new PerspectiveCamera(67, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         cam.position.set(3f, 1f, 17f);
         cam.lookAt(-19f, -19f, -19f);
@@ -120,6 +122,9 @@ public class GameScreen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
         batch.begin();
         batch.draw(UTILS.bg2, 0, 0);
+        fnt.setColor(UTILS.white);
+        fnt.getData().setScale(2);
+        fnt.draw(batch, "Current level: " + level + ". Moves used: " + moves, 100, Gdx.graphics.getHeight()-20);
         batch.end();
 
         if (animateCurrentColor) {
@@ -165,6 +170,7 @@ public class GameScreen {
             }
             colorBox[9] = new ColorBox(12f,-3,20, colors[rand.nextInt(4)]);
             currentColor = colorBox[0].c;
+            colorBox[0].selected = true;
             colorBoxAnim = 0;
        // }
 
@@ -181,6 +187,7 @@ public class GameScreen {
         disposeOld();
         batch.dispose();
         mBatch.dispose();
+        fnt.dispose();
 
 
     }
@@ -191,6 +198,7 @@ public class GameScreen {
                 if (!boxes[currentSelected[0]][currentSelected[1]].c.equals(currentColor)) {
                     changeColor(currentSelected[0], currentSelected[1], boxes[currentSelected[0]][currentSelected[1]].c);
                     checkWin();
+                    moves++;
                     nextColor();
                 }
                 break;
