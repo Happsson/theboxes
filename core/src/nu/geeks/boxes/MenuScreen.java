@@ -36,14 +36,23 @@ public class MenuScreen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
         batch.begin();
         batch.draw(UTILS.bg3, 0, 0);
-        fnt.getData().setScale(4,4);
+        fnt.getData().setScale(4, 4);
 
-        fnt.draw(batch, "The Boxes",Gdx.graphics.getWidth()/2 - 120, Gdx.graphics.getHeight()-100);
+        fnt.draw(batch, "The Boxes", Gdx.graphics.getWidth() / 2 - 120, Gdx.graphics.getHeight() - 100);
+        fnt.getData().setScale(2, 2);
+        fnt.draw(batch, "New Game", Gdx.graphics.getWidth() / 2 - 50, Gdx.graphics.getHeight() - 200);
+        fnt.draw(batch, "How To Play", Gdx.graphics.getWidth()/2 - 60,Gdx.graphics.getHeight() - 300 );
+        fnt.draw(batch, "High Scores", Gdx.graphics.getWidth()/2 - 65, Gdx.graphics.getHeight() - 400);
         batch.end();
     }
 
     public void mKeyPressed(int key){
         game.state = "PLAY";
+    }
+
+    public void dispose() {
+        fnt.dispose();
+        batch.dispose();
     }
 
     /*

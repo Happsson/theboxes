@@ -9,7 +9,12 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import java.util.Arrays;
+
+/*
+TODO Fix animations in gameplay
+TODO Graphics for all screens
+TODO Create a font
+ */
 
 public class TheBoxes extends ApplicationAdapter implements InputProcessor{
 
@@ -101,13 +106,13 @@ public class TheBoxes extends ApplicationAdapter implements InputProcessor{
 			menuScreen.mDraw();
 		} else if (state.equals("PLAY")) {
 			gameScreen.mDraw();
-		} /*else if (state.equals("LEVELDONE")) {
+		} else if (state.equals("LEVELDONE")) {
 			levelDoneScreen.level = currentLevel;
 			levelDoneScreen.mDraw();
-		} else if (state.equals("HOWTO")) {
-			howToScreen.mDraw();
 		} else if (state.equals("WINSCREEN")) {
 			winScreen.mDraw();
+		} /*else if (state.equals("HOWTO")) {
+			howToScreen.mDraw();
 		} else if (state.equals("HIGHSCORES")) {
 			highScoreScreen.mDraw();
 		}
@@ -131,15 +136,16 @@ public class TheBoxes extends ApplicationAdapter implements InputProcessor{
 		//Gdx.app.log("Recieved " + keycode, "keydown");
 
 		if (keycode == Input.Keys.ESCAPE) {
+
 			state = "MENU";
 		} else {
 			if (state.equals("MENU")) {
 				menuScreen.mKeyPressed(keycode);
 			} else if (state.equals("PLAY")) {
 				gameScreen.mKeyPressed(keycode);
-			} /*else if (state.equals("WINSCREEN")) {
+			} else if (state.equals("WINSCREEN")) {
 				winScreen.mKeyPressed(keycode);
-			} else if (state.equals("HIGHSCORES")) {
+			} /*else if (state.equals("HIGHSCORES")) {
 				highScoreScreen.mKeyPressed(keycode);
 			}
 		}
@@ -153,13 +159,13 @@ public class TheBoxes extends ApplicationAdapter implements InputProcessor{
 	@Override
 	public boolean keyUp(int keycode) {
 
-		/*
+
 		if (state.equals("PLAY")) {
 			gameScreen.mKeyReleased(keycode);
 		} else if (state.equals("LEVELDONE")) {
 			levelDoneScreen.mKeyReleased(keycode);
 		}
-		*/
+
 		return false;
 	}
 
@@ -203,6 +209,12 @@ public class TheBoxes extends ApplicationAdapter implements InputProcessor{
 	public void dispose() {
 		super.dispose();
 		gameScreen.dispose();
+		menuScreen.dispose();
+		levelDoneScreen.disopse();
+		howToScreen.dispose();
+		winScreen.dispose();
+		UTILS.bg2.dispose();
+		UTILS.bg3.dispose();
 
 	}
 }

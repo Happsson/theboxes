@@ -178,24 +178,29 @@ public class GameScreen {
      */
 
     public void dispose(){
-        for(int i = 0; i < row; i++){
-            for(int j = 0; j < col; j++){
-                boxes[i][j].model.dispose();
-            }
-        }
+        disposeOld();
+        batch.dispose();
+        mBatch.dispose();
+
 
     }
 
-    public void mKeyPressed(int keycode) {
-        firstGame = false; //Let game start as soon as user does anything.
-        switch(keycode) {
+    public void mKeyReleased(int keycode){
+        switch (keycode) {
             case Input.Keys.SPACE:
-                if(!boxes[currentSelected[0]][currentSelected[1]].c.equals(currentColor)){
+                if (!boxes[currentSelected[0]][currentSelected[1]].c.equals(currentColor)) {
                     changeColor(currentSelected[0], currentSelected[1], boxes[currentSelected[0]][currentSelected[1]].c);
                     checkWin();
                     nextColor();
                 }
                 break;
+        }
+    }
+
+    public void mKeyPressed(int keycode) {
+        firstGame = false; //Let game start as soon as user does anything.
+        switch(keycode) {
+
 
             case Input.Keys.LEFT:
                 boxes[currentSelected[0]][currentSelected[1]].unSelect();
