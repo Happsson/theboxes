@@ -32,6 +32,7 @@ public class GameScreen {
     Color[] colors = {UTILS.blue,UTILS.green,UTILS.pink,UTILS.red};
     Random rand;
 
+    boolean firstGame = true;
     SpriteBatch batch;
     Environment environment;
     Texture bg2, bg3;
@@ -59,6 +60,7 @@ public class GameScreen {
     }
 
     public void startGame(){
+        disposeOld();
         row++;
         col++;
         level++;
@@ -69,6 +71,22 @@ public class GameScreen {
         game.currentLevel = level;
     }
 
+    /**
+     * Dispose old models before building new level.
+     *
+     */
+    private void disposeOld(){
+        if(!firstGame){
+            for(int i = 0; i < row; i++){
+                for(int j = 0; j < col; j++){
+                    boxes[i][j].model.dispose();
+                }
+            }
+            for(int i = 0; i < 10; i++){
+                colorBox[i].model.dispose();
+            }
+        }
+    }
 
     private void createColorBoxes(){
         colorBox = new ColorBox[10];
@@ -131,12 +149,14 @@ public class GameScreen {
      Animates the array of color boxes one step.
      */
     void animateColor() {
+        /*
         for (int i = 0; i < 10; i++) {
             colorBox[i].animStep();
-
         }
+
         colorBoxAnim++;
         if (colorBoxAnim == 10) {
+            */
             animateCurrentColor = false;
             colorBox[0].model.dispose();
             for (int i = 0; i < 9; i++) {
@@ -146,7 +166,8 @@ public class GameScreen {
             colorBox[9] = new ColorBox(12f,-3,20, colors[rand.nextInt(4)]);
             currentColor = colorBox[0].c;
             colorBoxAnim = 0;
-        }
+       // }
+
     }
     /*
       colorBox[i] = new ColorBox(4+(i*1.2f),-3,-(i*2), colors[rand.nextInt(4)]);
@@ -166,6 +187,7 @@ public class GameScreen {
     }
 
     public void mKeyPressed(int keycode) {
+        firstGame = false; //Let game start as soon as user does anything.
         switch(keycode) {
             case Input.Keys.SPACE:
                 if(!boxes[currentSelected[0]][currentSelected[1]].c.equals(currentColor)){

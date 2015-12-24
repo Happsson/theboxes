@@ -47,7 +47,7 @@ public class TheBoxes extends ApplicationAdapter implements InputProcessor{
 		loadBgs();
 		fnt = new BitmapFont();
 		drawLoading();
-		state = "PLAY";
+		state = "MENU";
 		loadColors();
 
 		firstGame = true;
@@ -97,14 +97,11 @@ public class TheBoxes extends ApplicationAdapter implements InputProcessor{
 	@Override
 	public void render () {
 
-		gameScreen.mDraw();
-
-		/*
 		if (state.equals("MENU")) {
 			menuScreen.mDraw();
 		} else if (state.equals("PLAY")) {
 			gameScreen.mDraw();
-		} else if (state.equals("LEVELDONE")) {
+		} /*else if (state.equals("LEVELDONE")) {
 			levelDoneScreen.level = currentLevel;
 			levelDoneScreen.mDraw();
 		} else if (state.equals("HOWTO")) {
@@ -130,17 +127,17 @@ public class TheBoxes extends ApplicationAdapter implements InputProcessor{
 
 	@Override
 	public boolean keyDown(int keycode) {
-		gameScreen.mKeyPressed(keycode);
+		//gameScreen.mKeyPressed(keycode);
 		//Gdx.app.log("Recieved " + keycode, "keydown");
-/*
-		if(keycode == Input.Keys.ESCAPE){
+
+		if (keycode == Input.Keys.ESCAPE) {
 			state = "MENU";
-		}else{
+		} else {
 			if (state.equals("MENU")) {
 				menuScreen.mKeyPressed(keycode);
 			} else if (state.equals("PLAY")) {
 				gameScreen.mKeyPressed(keycode);
-			} else if (state.equals("WINSCREEN")) {
+			} /*else if (state.equals("WINSCREEN")) {
 				winScreen.mKeyPressed(keycode);
 			} else if (state.equals("HIGHSCORES")) {
 				highScoreScreen.mKeyPressed(keycode);
@@ -148,7 +145,9 @@ public class TheBoxes extends ApplicationAdapter implements InputProcessor{
 		}
 
 */
-		return false;
+		}
+			return false;
+
 	}
 
 	@Override

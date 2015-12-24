@@ -20,22 +20,12 @@ public class ColorBox extends Box {
     }
 
     public void animStep(){
-        instance.transform.setToTranslation(x, y+0.12f, z+0.2f);
-        instance.calculateTransforms();
-        if(anim) {
-            animCount++;
-
-        }
-        if(animCount == 10){
-            anim = false;
-        }
+        instance.transform.setToTranslation(x, y - (0.12f), z -(0.2f));
+       // instance.calculateTransforms();
     }
 
     @Override
     public void mDraw(){
         super.mDraw();
-
-
-
     }
 }
