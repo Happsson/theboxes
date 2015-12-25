@@ -12,8 +12,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 /*
 TODO Fix animations in gameplay
-TODO Graphics for all screens
-TODO Create a font
+TODO Implment highscore
  */
 
 public class TheBoxes extends ApplicationAdapter implements InputProcessor{
@@ -111,13 +110,11 @@ public class TheBoxes extends ApplicationAdapter implements InputProcessor{
 			levelDoneScreen.mDraw();
 		} else if (state.equals("WINSCREEN")) {
 			winScreen.mDraw();
-		} /*else if (state.equals("HOWTO")) {
+		} else if (state.equals("HOWTO")) {
 			howToScreen.mDraw();
 		} else if (state.equals("HIGHSCORES")) {
 			highScoreScreen.mDraw();
 		}
-
-	*/
 
 	}
 
@@ -139,19 +136,19 @@ public class TheBoxes extends ApplicationAdapter implements InputProcessor{
 
 			state = "MENU";
 		} else {
-			if (state.equals("MENU")) {
-				menuScreen.mKeyPressed(keycode);
-			} else if (state.equals("PLAY")) {
+			if (state.equals("PLAY")) {
 				gameScreen.mKeyPressed(keycode);
 			} else if (state.equals("WINSCREEN")) {
 				winScreen.mKeyPressed(keycode);
-			} /*else if (state.equals("HIGHSCORES")) {
+			}else if(state.equals("HOWTO")){
+				howToScreen.mKeyPressed();
+			} else if (state.equals("HIGHSCORES")) {
 				highScoreScreen.mKeyPressed(keycode);
 			}
 		}
 
-*/
-		}
+
+
 			return false;
 
 	}
@@ -164,6 +161,8 @@ public class TheBoxes extends ApplicationAdapter implements InputProcessor{
 			gameScreen.mKeyReleased(keycode);
 		} else if (state.equals("LEVELDONE")) {
 			levelDoneScreen.mKeyReleased(keycode);
+		}else if (state.equals("MENU")) {
+			menuScreen.mKeyReleased(keycode);
 		}
 
 		return false;
@@ -213,8 +212,18 @@ public class TheBoxes extends ApplicationAdapter implements InputProcessor{
 		levelDoneScreen.disopse();
 		howToScreen.dispose();
 		winScreen.dispose();
+		highScoreScreen.dispose();
 		UTILS.bg2.dispose();
 		UTILS.bg3.dispose();
-
+		UTILS.bgmenu.dispose();
+		UTILS.conblack.dispose();
+		UTILS.conwhite.dispose();
+		UTILS.highblack.dispose();
+		UTILS.highwhite.dispose();
+		UTILS.howblack.dispose();
+		UTILS.howwhite.dispose();
+		UTILS.newblack.dispose();
+		UTILS.newwhite.dispose();
+		UTILS.title.dispose();
 	}
 }

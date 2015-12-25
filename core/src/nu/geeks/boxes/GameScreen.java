@@ -33,6 +33,7 @@ public class GameScreen {
     Color[] colors = {UTILS.blue,UTILS.green,UTILS.pink,UTILS.red};
     Random rand;
     BitmapFont fnt;
+    BitmapFont fntSmall;
 
     boolean firstGame = true;
     SpriteBatch batch;
@@ -46,7 +47,7 @@ public class GameScreen {
     public GameScreen(TheBoxes game){
         this.game = game;
         rand = new Random();
-        fnt = new BitmapFont();
+        fnt = new BitmapFont(Gdx.files.internal("fnt2.fnt"), Gdx.files.internal("fnt2.png"), false);
         cam = new PerspectiveCamera(67, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         cam.position.set(3f, 1f, 17f);
         cam.lookAt(-19f, -19f, -19f);
@@ -58,6 +59,7 @@ public class GameScreen {
         environment.add(new DirectionalLight().set(0.5f, 0.5f, 0.5f, -1f, -0.2f, -0.1f));
         mBatch = new ModelBatch();
         batch = new SpriteBatch();
+        fntSmall = new BitmapFont(Gdx.files.internal("fntsmall.fnt"), Gdx.files.internal("fntsmall.png"), false);
         startGame();
     }
 
@@ -123,8 +125,9 @@ public class GameScreen {
         batch.begin();
         batch.draw(UTILS.bg2, 0, 0);
         fnt.setColor(UTILS.white);
-        fnt.getData().setScale(2);
-        fnt.draw(batch, "Current level: " + level + ". Moves used: " + moves, 100, Gdx.graphics.getHeight()-20);
+        fnt.draw(batch, "Current level: " + level, 100, 50);
+        fnt.draw(batch, "Moves used: " + moves, 600, 50);
+        fntSmall.draw(batch, "Current color", 690, 300);
         batch.end();
 
         if (animateCurrentColor) {
@@ -207,6 +210,7 @@ public class GameScreen {
 
     public void mKeyPressed(int keycode) {
         firstGame = false; //Let game start as soon as user does anything.
+        game.firstGame = false;
         switch(keycode) {
 
 
@@ -234,6 +238,14 @@ public class GameScreen {
                 if (currentSelected[1] > 0)
                     currentSelected[1]--;
                 boxes[currentSelected[0]][currentSelected[1]].select();
+                break;
+            case Input.Keys.R:
+                //dispose();
+                row = 1;
+                col = 1;
+                moves = 0;
+                level = 0;
+                startGame();
                 break;
         }
 

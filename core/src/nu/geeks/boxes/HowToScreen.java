@@ -1,5 +1,7 @@
 package nu.geeks.boxes;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
@@ -9,14 +11,29 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 public class HowToScreen {
 
     BitmapFont fnt;
+    BitmapFont fntBig;
     SpriteBatch batch;
 
     TheBoxes game;
     public HowToScreen(TheBoxes game){
         this.game = game;
-        fnt = new BitmapFont();
+        fntBig = new BitmapFont(Gdx.files.internal("fnt2.fnt"), Gdx.files.internal("fnt2.png"), false);
+        fnt = new BitmapFont(Gdx.files.internal("fntsmall.fnt"), Gdx.files.internal("fntsmall.png"), false);
         batch = new SpriteBatch();
+    }
 
+    public void mDraw(){
+        Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
+        batch.begin();
+        batch.draw(UTILS.bg3, 0, 0);
+        fntBig.draw(batch,"Welcome to boxes!", Gdx.graphics.getWidth()/2-110, Gdx.graphics.getHeight() - 50);
+        fnt.draw(batch, "The goal of this game is to get all the boxes the same color.\nSelect a box using the arrow keys.\nChange color of the selected box, and all connected boxes \nof the same color, to the current color displayed\n in the top right corner by hitting SPACE.\nPress R to restart game.\n\nTry to get through all 19 levels in as few moves as possible.\nHit ESC at any time to go back to main menu.", Gdx.graphics.getWidth() / 2 - 300, Gdx.graphics.getHeight() - 120);
+        batch.end();
+    }
+
+    public void mKeyPressed(){
+        game.state = "MENU";
     }
 
     public void dispose() {

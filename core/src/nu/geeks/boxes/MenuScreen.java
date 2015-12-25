@@ -1,6 +1,7 @@
 package nu.geeks.boxes;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -16,44 +17,95 @@ public class MenuScreen {
 
     TheBoxes game;
     SpriteBatch batch;
+    BitmapFont fnt;
 
     boolean newGame = false, howto = false, highscore = false;
     Color selCol;
     ColorBox[] rain = new ColorBox[10];
     Random r = new Random();
-    BitmapFont fnt;
 
 
     public MenuScreen(TheBoxes game){
         this.game = game;
         selCol = UTILS.white;
-        fnt = new BitmapFont();
         batch = new SpriteBatch();
+        newGame = true;
+        fnt = new BitmapFont(Gdx.files.internal("fnt2.fnt"), Gdx.files.internal("fnt2.png"), false);
     }
 
     public void mDraw(){
         Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
         batch.begin();
-        batch.draw(UTILS.bg3, 0, 0);
-        fnt.getData().setScale(4, 4);
+        batch.draw(UTILS.bgmenu, 0, 0);
+        batch.draw(UTILS.title, Gdx.graphics.getWidth() / 2 - 110, Gdx.graphics.getHeight() - 120);
+        if(game.firstGame) {
+            if (newGame) {
+                batch.draw(UTILS.newblack, Gdx.graphics.getWidth() / 2 - 110, Gdx.graphics.getHeight() - 220);
+            } else {
+                batch.draw(UTILS.newwhite, Gdx.graphics.getWidth() / 2 - 110, Gdx.graphics.getHeight() - 220);
+            }
+        }else{
+            if (newGame) {
+                batch.draw(UTILS.conblack, Gdx.graphics.getWidth() / 2 - 110, Gdx.graphics.getHeight() - 220);
+            } else {
+                batch.draw(UTILS.conwhite, Gdx.graphics.getWidth() / 2 - 110, Gdx.graphics.getHeight() - 220);
+            }
+            }
 
-        fnt.draw(batch, "The Boxes", Gdx.graphics.getWidth() / 2 - 120, Gdx.graphics.getHeight() - 100);
-        fnt.getData().setScale(2, 2);
-        fnt.draw(batch, "New Game", Gdx.graphics.getWidth() / 2 - 50, Gdx.graphics.getHeight() - 200);
-        fnt.draw(batch, "How To Play", Gdx.graphics.getWidth()/2 - 60,Gdx.graphics.getHeight() - 300 );
-        fnt.draw(batch, "High Scores", Gdx.graphics.getWidth()/2 - 65, Gdx.graphics.getHeight() - 400);
+        if(howto) {
+            batch.draw(UTILS.howblack, Gdx.graphics.getWidth() / 2 - 110, Gdx.graphics.getHeight() - 320);
+        }else{
+            batch.draw(UTILS.howwhite, Gdx.graphics.getWidth() / 2 - 110, Gdx.graphics.getHeight() - 320);
+        }
+        if(highscore){
+            batch.draw(UTILS.highblack, Gdx.graphics.getWidth() / 2 - 110, Gdx.graphics.getHeight() - 420);
+        }
+        else{
+            batch.draw(UTILS.highwhite, Gdx.graphics.getWidth() / 2 - 110, Gdx.graphics.getHeight() - 420);
+        }
+        fnt.getData().setScale(0.5f);
+        fnt.draw(batch, "By hannes.paulsson@gmail.com", Gdx.graphics.getWidth()- 310, 25);
         batch.end();
     }
 
-    public void mKeyPressed(int key){
-        game.state = "PLAY";
+    public void mKeyReleased(int key){
+
+        switch(key){
+            case Input.Keys.UP:
+                if(howto){
+                    howto = false;
+                    newGame = true;
+                }else if(highscore){
+                    highscore = false;
+                    howto = true;
+                }
+                break;
+            case Input.Keys.DOWN:
+                if(newGame){
+                    newGame = false;
+                    howto = true;
+                }else if(howto){
+                    howto = false;
+                    highscore = true;
+                }
+                break;
+            case Input.Keys.SPACE:
+                if(newGame) game.state = "PLAY";
+                if(howto) game.state = "HOWTO";
+                if(highscore) game.state = "HIGHSCORES";
+                break;
+        }
+
     }
 
     public void dispose() {
-        fnt.dispose();
+
         batch.dispose();
+        fnt.dispose();
     }
+
+
 
     /*
     public MenuScreen(){

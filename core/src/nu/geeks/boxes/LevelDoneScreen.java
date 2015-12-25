@@ -17,7 +17,7 @@ public class LevelDoneScreen {
     public LevelDoneScreen(TheBoxes game){
         this.game = game;
         batch = new SpriteBatch();
-        fnt = new BitmapFont();
+        fnt = new BitmapFont(Gdx.files.internal("fnt2.fnt"), Gdx.files.internal("fnt2.png"), false);
     }
 
     public void mDraw(){
@@ -25,7 +25,7 @@ public class LevelDoneScreen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
         batch.begin();
         batch.draw(UTILS.bg3, 0, 0);
-        fnt.draw(batch, "Level " + (level-1) + " done! Play level " + level + "!", Gdx.graphics.getWidth()/2-50, Gdx.graphics.getHeight()-100);
+        fnt.draw(batch, "Level " + (level-1) + " done!   Play level " + level + "!", Gdx.graphics.getWidth()/2-200, Gdx.graphics.getHeight()/2+50);
         batch.end();
 
     }
