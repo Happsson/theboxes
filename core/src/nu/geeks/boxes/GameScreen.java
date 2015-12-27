@@ -21,6 +21,7 @@ import java.util.Random;
  */
 public class GameScreen {
 
+    int levelMoves = 0;
     int moves = 0;
     int row = 1;
     int col = 1;
@@ -200,9 +201,12 @@ public class GameScreen {
             case Input.Keys.SPACE:
                 if (!boxes[currentSelected[0]][currentSelected[1]].c.equals(currentColor)) {
                     changeColor(currentSelected[0], currentSelected[1], boxes[currentSelected[0]][currentSelected[1]].c);
-                    checkWin();
+
                     moves++;
+                    levelMoves++;
                     nextColor();
+                    checkWin();
+
                 }
                 break;
         }
@@ -245,6 +249,7 @@ public class GameScreen {
                 col = 1;
                 moves = 0;
                 level = 0;
+                game.firstGame = true;
                 startGame();
                 break;
         }
@@ -261,9 +266,13 @@ public class GameScreen {
         }
         if (level < 19) {
             game.nextLevel();
+            game.levelBests[level-2] = levelMoves;
+            levelMoves = 0;
             game.state = "LEVELDONE";
+
         } else {
             game.winMoves = moves;
+            game.addHighScore();
             game.state = "WINSCREEN";
         }
     }

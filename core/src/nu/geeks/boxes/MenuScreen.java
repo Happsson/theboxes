@@ -2,6 +2,8 @@ package nu.geeks.boxes;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.Preferences;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -23,7 +25,6 @@ public class MenuScreen {
     Color selCol;
     ColorBox[] rain = new ColorBox[10];
     Random r = new Random();
-
 
     public MenuScreen(TheBoxes game){
         this.game = game;
@@ -65,36 +66,38 @@ public class MenuScreen {
             batch.draw(UTILS.highwhite, Gdx.graphics.getWidth() / 2 - 110, Gdx.graphics.getHeight() - 420);
         }
         fnt.getData().setScale(0.5f);
+        fnt.draw(batch, "Mute music with  ' m '", 100,25);
         fnt.draw(batch, "By hannes.paulsson@gmail.com", Gdx.graphics.getWidth()- 310, 25);
         batch.end();
     }
 
     public void mKeyReleased(int key){
 
-        switch(key){
+        switch(key) {
             case Input.Keys.UP:
-                if(howto){
+                if (howto) {
                     howto = false;
                     newGame = true;
-                }else if(highscore){
+                } else if (highscore) {
                     highscore = false;
                     howto = true;
                 }
                 break;
             case Input.Keys.DOWN:
-                if(newGame){
+                if (newGame) {
                     newGame = false;
                     howto = true;
-                }else if(howto){
+                } else if (howto) {
                     howto = false;
                     highscore = true;
                 }
                 break;
             case Input.Keys.SPACE:
-                if(newGame) game.state = "PLAY";
-                if(howto) game.state = "HOWTO";
-                if(highscore) game.state = "HIGHSCORES";
+                if (newGame) game.state = "PLAY";
+                if (howto) game.state = "HOWTO";
+                if (highscore) game.state = "HIGHSCORES";
                 break;
+            case Input.Keys.S:
         }
 
     }
@@ -105,18 +108,27 @@ public class MenuScreen {
         fnt.dispose();
     }
 
+    public void mMouseDown(int screenX, int screenY) {
+        if(newGame) game.state = "PLAY";
+        if(howto) game.state = "HOWTO";
+        if(highscore) game.state = "HIGHSCORES";
+    }
 
-
-    /*
-    public MenuScreen(){
-        selCol = white;
-        for(int i = 0; i < 10; i++){
-            rain[i] = new ColorBox(r.nextInt(width), r.nextInt(2000)-2020, white);
-            rain[i].z = -300;
-            rain[i].rotation = r.nextInt(90);
+    public void mMouseMoved(int mouseX, int mouseY) {
+        newGame = false;
+        howto = false;
+        highscore = false;
+        if(mouseX > 406 && mouseX < 555 && mouseY > 180 && mouseY < 215){
+            newGame = true;
+        }
+        if(mouseX > 385 && mouseX < 576 && mouseY > 280 && mouseY < 316){
+            howto = true;
+        }
+        if(mouseX > 387 && mouseX < 575 && mouseY > 380 && mouseY < 415){
+            highscore = true;
         }
     }
 
-*/
+
 
 }

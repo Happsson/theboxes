@@ -25,7 +25,9 @@ public class WinScreen {
         fnt.dispose();
     }
 
-    public void mKeyPressed(int key) {
+    public void mKeyReleased(int key) {
+        game.state = "MENU";
+        game.restart();
     }
 
     public void mDraw() {
@@ -33,7 +35,7 @@ public class WinScreen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
         batch.begin();
         batch.draw(UTILS.bg3, 0, 0);
-        fnt.draw(batch, "You did it! It took you " + game.winMoves + " moves!", Gdx.graphics.getWidth()/2-140, Gdx.graphics.getHeight()/2);
+        fnt.draw(batch, "You did it! It took you " + game.winMoves + " moves!", Gdx.graphics.getWidth()/2-250, Gdx.graphics.getHeight()/2+50);
         batch.end();
 
 

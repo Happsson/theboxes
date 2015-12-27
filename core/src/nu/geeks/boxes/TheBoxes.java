@@ -4,15 +4,24 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.Preferences;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
+import java.util.Arrays;
+
 /*
 TODO Fix animations in gameplay
-TODO Implment highscore
+TODO Add music
+
+"Monkeys Spinning Monkeys" Kevin MacLeod (incompetech.com)
+Licensed under Creative Commons: By Attribution 3.0
+http://creativecommons.org/licenses/by/3.0/
+
  */
 
 public class TheBoxes extends ApplicationAdapter implements InputProcessor{
@@ -21,17 +30,20 @@ public class TheBoxes extends ApplicationAdapter implements InputProcessor{
 	int width = 960;
 	int height = 540;
 
+	int[] levelBests;
+
+	boolean musicPlaying;
+
+	Music music;
+
 	//PFont fnt3;
 	String state;
 
 	boolean firstGame;
 
-	String winTime = "";
 	int winMoves = 0;
 
 	int currentLevel = 0;
-
-	String[] highScores;
 
 	GameScreen gameScreen;
 	MenuScreen menuScreen;
@@ -40,10 +52,15 @@ public class TheBoxes extends ApplicationAdapter implements InputProcessor{
 	WinScreen winScreen;
 	HighScoreScreen highScoreScreen;
 
+	String[] currentHighScores = new String[10];
 
 	SpriteBatch batch;
 	Texture bg2, bg3;
 	BitmapFont fnt;
+
+	//save
+	Preferences highScores;
+	Preferences levelBest;
 	
 	@Override
 	public void create () {
@@ -54,13 +71,20 @@ public class TheBoxes extends ApplicationAdapter implements InputProcessor{
 		state = "MENU";
 		loadColors();
 
+
+
 		firstGame = true;
 		initializeScreens();
+		levelBests = new int[19];
 
 		Gdx.input.setInputProcessor(this);
-
-
-
+		highScores = Gdx.app.getPreferences("highScores");
+		levelBest = Gdx.app.getPreferences("levelBest");
+		readHighScores();
+		music = Gdx.audio.newMusic(Gdx.files.internal("music.mp3"));
+		music.play();
+		music.setLooping(true);
+		musicPlaying = true;
 	}
 
 	private void initializeScreens(){
@@ -124,7 +148,12 @@ public class TheBoxes extends ApplicationAdapter implements InputProcessor{
 	}
 
 	public void restart() {
+		firstGame = true;
 		initializeScreens();
+	}
+
+	public void saveData(){
+
 	}
 
 	@Override
@@ -135,15 +164,17 @@ public class TheBoxes extends ApplicationAdapter implements InputProcessor{
 		if (keycode == Input.Keys.ESCAPE) {
 
 			state = "MENU";
-		} else {
-			if (state.equals("PLAY")) {
+		} else if(keycode == Input.Keys.M) {
+			if (musicPlaying) {
+				music.pause();
+				musicPlaying = false;
+			} else {
+				musicPlaying = true;
+				music.play();
+			}
+		}else{
+			if(state.equals("PLAY")) {
 				gameScreen.mKeyPressed(keycode);
-			} else if (state.equals("WINSCREEN")) {
-				winScreen.mKeyPressed(keycode);
-			}else if(state.equals("HOWTO")){
-				howToScreen.mKeyPressed();
-			} else if (state.equals("HIGHSCORES")) {
-				highScoreScreen.mKeyPressed(keycode);
 			}
 		}
 
@@ -156,8 +187,13 @@ public class TheBoxes extends ApplicationAdapter implements InputProcessor{
 	@Override
 	public boolean keyUp(int keycode) {
 
-
-		if (state.equals("PLAY")) {
+		if (state.equals("WINSCREEN")) {
+			winScreen.mKeyReleased(keycode);
+		}else if(state.equals("HOWTO")){
+			howToScreen.mKeyReleased();
+		} else if (state.equals("HIGHSCORES")) {
+			highScoreScreen.mKeyReleased(keycode);
+		}else if (state.equals("PLAY")) {
 			gameScreen.mKeyReleased(keycode);
 		} else if (state.equals("LEVELDONE")) {
 			levelDoneScreen.mKeyReleased(keycode);
@@ -175,6 +211,9 @@ public class TheBoxes extends ApplicationAdapter implements InputProcessor{
 
 	@Override
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+		if(state.equals("MENU")){
+			menuScreen.mMouseDown(screenX, screenY);
+		}
 		return false;
 	}
 
@@ -196,6 +235,10 @@ public class TheBoxes extends ApplicationAdapter implements InputProcessor{
 
 	@Override
 	public boolean mouseMoved(int screenX, int screenY) {
+		if(state.equals("MENU")){
+			menuScreen.mMouseMoved(screenX, screenY);
+
+		}
 		return false;
 	}
 
@@ -225,5 +268,53 @@ public class TheBoxes extends ApplicationAdapter implements InputProcessor{
 		UTILS.newblack.dispose();
 		UTILS.newwhite.dispose();
 		UTILS.title.dispose();
+		music.dispose();
+	}
+
+	public void addHighScore() {
+
+		int[] previous = new int[11]; //One longer than the actual top 10 list
+		for(int i = 1; i <= 10; i++)
+		{
+			previous[i-1] = highScores.getInteger(""+(i-1), 999999999);
+		}
+		previous[10] = winMoves;	//Add the current score.
+		Arrays.sort(previous);		//Sort the list. (if current score wasn't top ten, it wont get saved.
+		highScores.clear();
+		highScores.flush();
+		for(int i = 0; i < 10; i++){
+			highScores.putInteger(""+i, previous[i]);
+			//Gdx.app.log(""+ previous[i], "hs:"+i);
+		}
+		highScores.flush();
+
+		if(previous[0] == winMoves){
+			levelBest.clear();
+			for(int i = 0; i < 19; i++){
+				levelBest.putInteger(""+ (i+1),levelBests[i]);
+			}
+			levelBest.flush();
+		}
+
+		readHighScores();
+	}
+
+	public void readHighScores(){
+		for(int i = 0; i < 10; i++){
+			int tmpHigh = highScores.getInteger(""+i, 999999999);
+			if(tmpHigh == 999999999){
+				currentHighScores[i] = "" + (i+1) + " ------";
+			}else{
+				currentHighScores[i] = "" + (i+1) + ". " + tmpHigh;
+
+			}
+		}
+	}
+
+	public void clearHighscores(){
+		highScores.clear();
+		highScores.flush();
+		levelBest.clear();
+		levelBest.flush();
 	}
 }
