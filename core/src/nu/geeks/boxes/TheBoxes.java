@@ -1,11 +1,14 @@
 package nu.geeks.boxes;
 
 import com.badlogic.gdx.ApplicationAdapter;
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Preferences;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
@@ -14,29 +17,18 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import java.util.Arrays;
 
-/*
-TODO Fix animations in gameplay
-TODO Add music
-
-"Monkeys Spinning Monkeys" Kevin MacLeod (incompetech.com)
-Licensed under Creative Commons: By Attribution 3.0
-http://creativecommons.org/licenses/by/3.0/
-
- */
 
 public class TheBoxes extends ApplicationAdapter implements InputProcessor{
 
-
+	boolean absoulteFirst = true;
 	int width = 960;
-	int height = 540;
-
+	int height = 54;
 	int[] levelBests;
-
+	Sound plop;
 	boolean musicPlaying;
 
 	Music music;
 
-	//PFont fnt3;
 	String state;
 
 	boolean firstGame;
@@ -71,7 +63,7 @@ public class TheBoxes extends ApplicationAdapter implements InputProcessor{
 		state = "MENU";
 		loadColors();
 
-
+		plop = Gdx.audio.newSound(Gdx.files.internal("plop.mp3"));
 
 		firstGame = true;
 		initializeScreens();
@@ -154,6 +146,12 @@ public class TheBoxes extends ApplicationAdapter implements InputProcessor{
 
 	public void saveData(){
 
+	}
+
+	public void playSound(){
+		if(musicPlaying){
+			plop.play();
+		}
 	}
 
 	@Override
@@ -253,6 +251,9 @@ public class TheBoxes extends ApplicationAdapter implements InputProcessor{
 		gameScreen.dispose();
 		menuScreen.dispose();
 		levelDoneScreen.disopse();
+		bg2.dispose();
+		bg3.dispose();
+		batch.dispose();
 		howToScreen.dispose();
 		winScreen.dispose();
 		highScoreScreen.dispose();

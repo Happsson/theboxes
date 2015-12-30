@@ -5,22 +5,20 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
-import com.badlogic.gdx.graphics.g3d.environment.DirectionalShadowLight;
-import com.badlogic.gdx.math.Vector3;
 
+import java.util.ArrayList;
 import java.util.Random;
 /**
  * Created by hannespa on 15-12-23.
  */
 public class GameScreen {
-
+    boolean fastAnim = false;
     int levelMoves = 0;
     int moves = 0;
     int row = 1;
@@ -35,6 +33,10 @@ public class GameScreen {
     Random rand;
     BitmapFont fnt;
     BitmapFont fntSmall;
+
+    boolean animateMoves = false;
+    ArrayList<Box> animateQueue;
+    int animateIndex;
 
     boolean firstGame = true;
     SpriteBatch batch;
@@ -61,6 +63,8 @@ public class GameScreen {
         mBatch = new ModelBatch();
         batch = new SpriteBatch();
         fntSmall = new BitmapFont(Gdx.files.internal("fntsmall.fnt"), Gdx.files.internal("fntsmall.png"), false);
+        animateQueue = new ArrayList<Box>();
+        animateIndex = 0;
         startGame();
     }
 
@@ -129,10 +133,46 @@ public class GameScreen {
         fnt.draw(batch, "Current level: " + level, 100, 50);
         fnt.draw(batch, "Moves used: " + moves, 600, 50);
         fntSmall.draw(batch, "Current color", 690, 300);
+        if(game.absoulteFirst){
+            fntSmall.draw(batch, "WASD to move, ENTER to change color.", 300, Gdx.graphics.getHeight()/2);
+        }
         batch.end();
 
         if (animateCurrentColor) {
             animateColor();
+        }
+
+        if(animateMoves){
+            if(animateIndex < animateQueue.size()){
+                if(!animateQueue.get(animateIndex).animationDone){
+                    animateQueue.get(animateIndex).anim();
+                }else{
+                    animateIndex++;
+                    game.playSound();
+                }
+
+            }else{
+                animateMoves = false;
+                animateIndex = 0;
+                animateQueue.clear();
+                setAllColors();
+                checkWin();
+            }
+        }else if(fastAnim){
+
+            for(Box b : animateQueue){
+                b.anim();
+                game.playSound();
+            }
+            if(animateQueue.get(animateQueue.size()-1).animationDone){
+                fastAnim = false;
+                animateIndex = 0;
+                animateQueue.clear();
+                setAllColors();
+                checkWin();
+
+            }
+
         }
 
         mBatch.begin(cam);
@@ -154,97 +194,98 @@ public class GameScreen {
 
     }
 
+
+    void setAllColors(){
+        for(int i = 0; i < row; i++){
+            for(int j = 0; j < col; j++){
+
+                boxes[i][j].animationDone = true;
+                boxes[i][j].rotation = 0;
+                boxes[i][j].setColor();
+
+            }
+        }
+    }
+
     /**
      Animates the array of color boxes one step.
      */
     void animateColor() {
-        /*
-        for (int i = 0; i < 10; i++) {
-            colorBox[i].animStep();
-        }
 
-        colorBoxAnim++;
-        if (colorBoxAnim == 10) {
-            */
-            animateCurrentColor = false;
-            colorBox[0].model.dispose();
-            for (int i = 0; i < 9; i++) {
-                colorBox[i] = colorBox[i+1];
-                colorBox[i].setPosition(4+(i*1.2f),-3,-(i*2));
-            }
-            colorBox[9] = new ColorBox(12f,-3,20, colors[rand.nextInt(4)]);
-            currentColor = colorBox[0].c;
-            colorBox[0].selected = true;
-            colorBoxAnim = 0;
-       // }
+        animateCurrentColor = false;
+        colorBox[0].model.dispose();
+        for (int i = 0; i < 9; i++) {
+            colorBox[i] = colorBox[i+1];
+            colorBox[i].setPosition(4+(i*1.2f),-3,-(i*2));
+        }
+        colorBox[9] = new ColorBox(12f,-3,20, colors[rand.nextInt(4)]);
+        currentColor = colorBox[0].c;
+        colorBox[0].selected = true;
+        colorBoxAnim = 0;
+
 
     }
-    /*
-      colorBox[i] = new ColorBox(4+(i*1.2f),-3,-(i*2), colors[rand.nextInt(4)]);
-            colorBox[i].rotX = 1;
-            colorBox[i].rotY = 1;
-            colorBox[i].rotZ = 1;
-            colorBox[i].rotAmount = 2;
-     */
+
 
     public void dispose(){
         disposeOld();
         batch.dispose();
         mBatch.dispose();
         fnt.dispose();
-
-
     }
 
     public void mKeyReleased(int keycode){
         switch (keycode) {
-            case Input.Keys.SPACE:
-                if (!boxes[currentSelected[0]][currentSelected[1]].c.equals(currentColor)) {
-                    changeColor(currentSelected[0], currentSelected[1], boxes[currentSelected[0]][currentSelected[1]].c);
-
-                    moves++;
-                    levelMoves++;
-                    nextColor();
-                    checkWin();
-
+            case Input.Keys.ENTER:
+                if(animateQueue.size() < 1) {
+                    if (!boxes[currentSelected[0]][currentSelected[1]].c.equals(currentColor)) {
+                        changeColor(currentSelected[0], currentSelected[1], boxes[currentSelected[0]][currentSelected[1]].c);
+                        animateMoves = true;
+                        moves++;
+                        levelMoves++;
+                        nextColor();
+                    }
+                }else{
+                    animateMoves = false;
+                    fastAnim = true;
                 }
                 break;
         }
     }
 
+
     public void mKeyPressed(int keycode) {
+
         firstGame = false; //Let game start as soon as user does anything.
         game.firstGame = false;
         switch(keycode) {
-
-
-            case Input.Keys.LEFT:
+            case Input.Keys.A:
                 boxes[currentSelected[0]][currentSelected[1]].unSelect();
                 if (currentSelected[0] < row-1)
                     currentSelected[0]++;
                 boxes[currentSelected[0]][currentSelected[1]].select();
 
                 break;
-            case Input.Keys.RIGHT:
+            case Input.Keys.D:
                 boxes[currentSelected[0]][currentSelected[1]].unSelect();
                 if (currentSelected[0] > 0)
                     currentSelected[0]--;
                 boxes[currentSelected[0]][currentSelected[1]].select();
                 break;
-            case Input.Keys.DOWN:
+            case Input.Keys.S:
                 boxes[currentSelected[0]][currentSelected[1]].unSelect();
                 if (currentSelected[1] < col-1)
                     currentSelected[1]++;
                 boxes[currentSelected[0]][currentSelected[1]].select();
                 break;
-            case Input.Keys.UP:
+            case Input.Keys.W:
                 boxes[currentSelected[0]][currentSelected[1]].unSelect();
                 if (currentSelected[1] > 0)
                     currentSelected[1]--;
                 boxes[currentSelected[0]][currentSelected[1]].select();
                 break;
             case Input.Keys.R:
-                //dispose();
+
                 row = 1;
                 col = 1;
                 moves = 0;
@@ -269,6 +310,7 @@ public class GameScreen {
             game.levelBests[level-2] = levelMoves;
             levelMoves = 0;
             game.state = "LEVELDONE";
+            game.absoulteFirst = false;
 
         } else {
             game.winMoves = moves;
@@ -291,6 +333,8 @@ public class GameScreen {
      */
     void changeColor(int x, int y, Color colr) {
         //System.out.println();
+        animateQueue.add(boxes[x][y]);
+        boxes[x][y].animationDone = false;
         boxes[x][y].setColor(currentColor);
         if (x > 0) {
             if (boxes[x-1][y].c.equals(colr)) {

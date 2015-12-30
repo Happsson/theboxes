@@ -7,13 +7,9 @@ import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
-import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
-import com.sun.prism.Texture;
 
 import java.util.Random;
-
-import javax.swing.text.AttributeSet;
 
 /**
  * Created by hannespa on 15-12-23.
@@ -26,9 +22,11 @@ public class Box {
     public ModelInstance instance;
     public int rotation = 0;
     ModelBuilder mBuilder;
+
     float x, y, z;
     Color c;
     int rotAmount, rotX,rotY,rotZ;
+    boolean animationDone = true;
 
     public boolean selected = false;
 
@@ -53,6 +51,30 @@ public class Box {
         instance.transform.setToTranslation(new Vector3(x,y,z));
 
 
+    }
+
+    public void anim(){
+        if(selected){
+            animationDone = true;
+            setColor();
+        }
+        if(!animationDone){
+        instance.transform.rotate(new Vector3(1,1,0), 45);
+        rotation++;
+          //  Gdx.app.log(""+rotation, "rot");
+        }
+        if(rotation == 4){
+            animationDone = true;
+            rotation = 0;
+            setColor();
+        }
+
+
+    }
+
+    public void setColor() {
+
+        instance.materials.get(0).set(ColorAttribute.createDiffuse(c));
     }
 
     public void select(){
@@ -80,7 +102,7 @@ public class Box {
     }
 
     public void setColor(Color c){
-        instance.materials.get(0).set(ColorAttribute.createDiffuse(c));
+
         this.c = c;
     }
 

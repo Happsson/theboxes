@@ -74,7 +74,7 @@ public class MenuScreen {
     public void mKeyReleased(int key){
 
         switch(key) {
-            case Input.Keys.UP:
+            case Input.Keys.W:
                 if (howto) {
                     howto = false;
                     newGame = true;
@@ -83,7 +83,7 @@ public class MenuScreen {
                     howto = true;
                 }
                 break;
-            case Input.Keys.DOWN:
+            case Input.Keys.S:
                 if (newGame) {
                     newGame = false;
                     howto = true;
@@ -92,12 +92,11 @@ public class MenuScreen {
                     highscore = true;
                 }
                 break;
-            case Input.Keys.SPACE:
+            case Input.Keys.ENTER:
                 if (newGame) game.state = "PLAY";
                 if (howto) game.state = "HOWTO";
                 if (highscore) game.state = "HIGHSCORES";
                 break;
-            case Input.Keys.S:
         }
 
     }
